@@ -1,0 +1,1 @@
+//Definicion de todas las variables globales de uso en todo el juego

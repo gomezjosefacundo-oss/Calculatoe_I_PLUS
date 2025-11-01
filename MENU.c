@@ -9,7 +9,7 @@
 
 typedef enum{
 	
-	EXIT,       // 0 -> No hay sub menu
+	EXIT,       // 0 -> No hay sub Menu
 	Opcion1,    // 1 -> Arriba
 	Opcion2     // 2 -> Abajo
 	

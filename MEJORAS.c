@@ -1,3 +1,4 @@
+/*
 //Definicion estructura de todas las mejoras del juego
 
 typedef struct {
@@ -125,3 +126,5 @@ struct{
 		
 	}
 };
+
+*/

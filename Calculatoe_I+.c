@@ -1,25 +1,16 @@
-#include <stdio.h> //Libreria estandar
-#include <stdlib.h> //Para el system("pause")
-#include <windows.h> //Para el Sleep(.) y getch()
+//Cabecera de funciones publicas
+#include "MENUS/Public.h"
 //
-#include "MEJORAS.c" //Definiciones Estructura MEJORAS
-#include "VARIABLES.c" //Defino todas las variables del juego
-#include "FUNCIONES.c" //Defino todas las funciones del juego (getKEY - )
-
-#include "MENU.c" //Escritura facil de el funcionamiento del menu
-//
-
-
 
 int main(){
 	
-	F_Intro();
+	int GENERAL_CURSOR = 0;
+
+	I_Intro(&GENERAL_CURSOR);
 	
 	while(1){
 		
-		F_Menu();
-		//C_Menu(getKEY());
-		
+
 		system("pause");
 	
 	}

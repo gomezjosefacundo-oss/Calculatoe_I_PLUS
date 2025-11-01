@@ -1,19 +1,14 @@
-//Acceso de funciones que actualizan la pantalla y hacen anclaje entre menus
+//MENU PRINCIPAL DEL JUEGO
 
-//Todos los frames a usar en el menu (al ser todos constantes de caracteres), se guardaran en la estructura FRAME por orden.
-
-//Todas las funciones que usan los frames para actualizar la pantalla empezaran con "F_" para distingirse como Frames
-//Todas las funciones que calculan los frames para actualizar el estado del cursor empezaran con "C_"
-
-//Se añade "m" para el cursor, al ser el cursor principal del menu
+#include "Public.h"
 
 typedef enum{
-	
+
 	EXIT,       // 0 -> No hay sub Menu
 	Opcion1,    // 1 -> Arriba
 	Opcion2     // 2 -> Abajo
 	
-} mF_subCursor;
+} subCursor;
 
 typedef enum{
 	
@@ -29,21 +24,19 @@ typedef enum{
 	Partida,    // 9
 	EXIL_L      //10 -> L bajaste mucho
 	
-} mF_Cursor;
+} Cursor;
 
 
 
-struct{ //Definicion de todos los frames del menu, CONST
+static struct{ //Definicion de todos los frames del menu, CONST
 	//Punteros a cadenas constantes - - -
-	
-	mF_subCursor sCURSOR; //Memoria de si existe un submenu y su posicion (NO-arriba-abajo)
 
-	mF_Cursor CURSOR; //Memoria de donde esta el usuario en el menu.
+	subCursor sCURSOR; //Memoria de si existe un submenu y su posicion (NO-arriba-abajo)
+
+	Cursor CURSOR; //Memoria de donde esta el usuario en el menu.
 	
 	int SURE; //Variable Auxiliar de seguro	(0-> nada || 1-> Seguro?)
 
-	char *INTRO[12];
-	//- Secuencia de animacion (9), + info compilacion (3)
 	char *MENU[9];
 	//- 1*Clicker, 2*Base, 3*Eficiencia de Base, 4*Potencia, 5*Ran#, 6*Autom retraso, 7*Autom Efficiencia, 8*Opciones, 9*partida 
 	char *SUBMENU[5];
@@ -51,28 +44,11 @@ struct{ //Definicion de todos los frames del menu, CONST
 
 	
 	
-}FRAME = {
+} FRAME = {
 	
 	.sCURSOR = EXIT,
 	.CURSOR = Clicker,
-	
-	.INTRO = {
-		[ 0] = "                                       ..\n",
-		[ 1] = "                                      ....\n",
-		[ 2] = "                                  ............\n",
-		[ 3] = "                            ......................\n",
-		[ 4] = "                                -Calculatoe I-\n",
-		[ 5] = "                              ......................\n",
-		[ 6] = "                                  ............\n",
-		[ 7] = "                                      ....\n",
-		[ 8] = "                                       ..\n\n\n",
-		
-		[ 9] = "Ver. 1.4.33.26+ \n",
-		[10] = "By: XDemonKillX \n\n\n\n\n",
-		[11] = "                       [Presione -Derecha- para Continuar] \n"
-		
-		
-	},
+
 	.MENU = {
 		[ 0] = "Clicker",
 		[ 1] = "Mej. Base",
@@ -97,28 +73,19 @@ struct{ //Definicion de todos los frames del menu, CONST
 	
 };
 
+//Prototipos
+void F_Menu();
+void C_Menu(char, int *);
 
-void F_Intro(){ //Animacion de inicio
+//Funcion inicializadora y loop del menu
+void I_Menu(int *GENERAL_CURSOR){
 
-	system("cls");
-	
-	printf("\n\n\n\n\n");
-	Sleep(150);
-    
-	for(int i = 0; i < 9; i++){
-		printf("%s", FRAME.INTRO[i]);
-		Sleep(250);
-	}
-	
-    Sleep(350);
+	while(*GENERAL_CURSOR == 1){
 
-    for(int i = 9; i < 12; i++){
-		printf("%s", FRAME.INTRO[i]);
-		Sleep(100);
-	}
-	
-	//Funcion que detecta pasar a Menu principal para salir del inicio
-	while(getKEY() != 'R');
+        F_Menu();
+
+        C_Menu(getKEY(), GENERAL_CURSOR);
+    }
 
 }
 
@@ -129,7 +96,7 @@ void F_Menu(){ //El menu mas importante OMG
 	printf("-Menu- -TAB para consultar Datos-\n\n");
 	
 	//Funcion de diseccion de todas las opciones del menu
-	for(mF_Cursor i = Clicker; i < Partida; i++){
+	for(Cursor i = Clicker; i < Partida; i++){
 		
 		if(FRAME.CURSOR == i){ //Seleccionado
 
@@ -165,35 +132,47 @@ void F_Menu(){ //El menu mas importante OMG
 	
 }
 
-void C_Menu(char KEY){ //Calculo del menu
+void C_Menu(char KEY, int *GENERAL_CURSOR){ //Calculo del menu
 
 	switch(KEY){
 
-		case 'U':
+		case 'U': //Mover el cursor hacia arriba
+        	
+			if(FRAME.sCURSOR == EXIT){
+				FRAME.CURSOR++; 
+			}else{
+				FRAME.sCURSOR = Opcion1;
+			}
+
+        break;
+
+        case 'D': //Mover el cursor hacia abajo
+        	
+		if(FRAME.sCURSOR == EXIT){
+				FRAME.CURSOR--; 
+			}else{
+				FRAME.sCURSOR = Opcion2;
+			}
+
+        break;
+
+        case 'L': //Salir de un submenu
             
 
         break;
 
-        case 'D':
+        case 'R': //Enter, entrar a otro menu u aun submenu
             
 
         break;
 
-        case 'L':
-            
-
-        break;
-
-        case 'R':
-            
-
-        break;
-
-        case 'T':
+        case 'T': //Para ver temporalmente el menu de informacion extra
             
 
         break;
 
 	}
+
+	KEY = 0; //Tecla leida
 
 }

@@ -1,8 +1,5 @@
 //Definicion de todas las funciones globales de uso en todo el juego
-
-
-
-
+#include "MENUS/Public.h"
 
 char getKEY(){ //Detrector de tecla, retornando de forma global la tecla usada.
 

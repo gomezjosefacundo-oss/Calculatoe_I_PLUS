@@ -2,6 +2,12 @@
 
 #include "Public.h"
 
+
+//Prototipos
+void F_Intro();
+void C_Intro(char);
+
+
 static struct{ //Definicion de constantes de animacion.
     //Punteros a cadenas constantes - - -
     char *INTRO[12];
@@ -29,17 +35,13 @@ static struct{ //Definicion de constantes de animacion.
 
 };
 
-//Prototipos
-void F_Intro();
-void C_Intro(char, int *);
+void I_Intro(){
 
-void I_Intro(int *GENERAL_CURSOR){
-
-    while(*GENERAL_CURSOR == 0){
+    while(G_FRAME.CURSOR == INTRO){
 
         F_Intro();
 
-        C_Intro(getKEY(), GENERAL_CURSOR);
+        C_Intro(getKEY());
     }
 
 }
@@ -65,12 +67,12 @@ void F_Intro(){ //Animacion de inicio
 
 }
 
-void C_Intro(char KEY, int *GENERAL_CURSOR){
+void C_Intro(char KEY){
 
     switch(KEY){
 
         case 'R':
-            *GENERAL_CURSOR = 1; //Cambio al menu principal
+            G_FRAME.CURSOR = MENU; //Cambio al menu principal
 
         break;
 

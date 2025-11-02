@@ -2,6 +2,10 @@
 
 #include "Public.h"
 
+//Prototipos
+void F_Menu();
+void C_Menu(char);
+
 typedef enum{
 
 	EXIT,       // 0 -> No hay sub Menu
@@ -12,17 +16,17 @@ typedef enum{
 
 typedef enum{
 	
-	EXIT_H,     // 0 -> H subiste mucho
-	Clicker,    // 1
-	Base,       // 2
-	EffBase,    // 3
-	Potencia,   // 4
-	Ran,        // 5
-	TAutom,     // 6
-	EfAutom,    // 7
-	Opciones,   // 8
-	Partida,    // 9
-	EXIL_L      //10 -> L bajaste mucho
+	EXIT_H = -1,//-1 -> H subiste mucho
+	Clicker,    // 0
+	Base,       // 1
+	EffBase,    // 2
+	Potencia,   // 3
+	Ran,        // 4
+	TAutom,     // 5
+	EfAutom,    // 6
+	Opciones,   // 7
+	Partida,    // 8
+	EXIT_L      // 9 -> L bajaste mucho
 	
 } Cursor;
 
@@ -73,18 +77,14 @@ static struct{ //Definicion de todos los frames del menu, CONST
 	
 };
 
-//Prototipos
-void F_Menu();
-void C_Menu(char, int *);
-
 //Funcion inicializadora y loop del menu
-void I_Menu(int *GENERAL_CURSOR){
+void I_Menu(){
 
-	while(*GENERAL_CURSOR == 1){
+	while(G_FRAME.CURSOR == MENU){
 
         F_Menu();
 
-        C_Menu(getKEY(), GENERAL_CURSOR);
+        C_Menu(getKEY());
     }
 
 }
@@ -96,7 +96,7 @@ void F_Menu(){ //El menu mas importante OMG
 	printf("-Menu- -TAB para consultar Datos-\n\n");
 	
 	//Funcion de diseccion de todas las opciones del menu
-	for(Cursor i = Clicker; i < Partida; i++){
+	for(Cursor i = Clicker; i < EXIT_L; i++){
 		
 		if(FRAME.CURSOR == i){ //Seleccionado
 
@@ -115,7 +115,9 @@ void F_Menu(){ //El menu mas importante OMG
 				}
 
 				if(FRAME.SURE == 1){
-					printf(" -> %s", FRAME.SUBMENU[j+2]);
+					printf(" -> %s\n", FRAME.SUBMENU[j+2]);
+				}else{
+					printf("\n");
 				}
 
 			}else{ //Selecciona solo la opcion
@@ -129,18 +131,23 @@ void F_Menu(){ //El menu mas importante OMG
 		}
 		
 	}
+	printf("\nDEBUG CURSOR = %d\n", FRAME.CURSOR);
+	printf("DEBUG sCURSOR = %d\n", FRAME.sCURSOR);
 	
 }
 
-void C_Menu(char KEY, int *GENERAL_CURSOR){ //Calculo del menu
+void C_Menu(char KEY){ //Calculo del menu
 
 	switch(KEY){
 
 		case 'U': //Mover el cursor hacia arriba
         	
-			if(FRAME.sCURSOR == EXIT){
-				FRAME.CURSOR++; 
-			}else{
+			if(FRAME.sCURSOR == EXIT){ //No existe un submenu
+
+				FRAME.CURSOR--; 
+				if(FRAME.CURSOR == EXIT_H) FRAME.CURSOR = Partida;
+
+			}else{ //Existe un submenu
 				FRAME.sCURSOR = Opcion1;
 			}
 
@@ -148,26 +155,115 @@ void C_Menu(char KEY, int *GENERAL_CURSOR){ //Calculo del menu
 
         case 'D': //Mover el cursor hacia abajo
         	
-		if(FRAME.sCURSOR == EXIT){
-				FRAME.CURSOR--; 
-			}else{
+		if(FRAME.sCURSOR == EXIT){ //No existe submenu
+
+				FRAME.CURSOR++; 
+				if(FRAME.CURSOR == EXIT_L) FRAME.CURSOR = Clicker;
+
+			}else{ //Existe un submenu
 				FRAME.sCURSOR = Opcion2;
 			}
 
         break;
 
         case 'L': //Salir de un submenu
-            
+            FRAME.sCURSOR = EXIT;
+			FRAME.SURE = 0;
 
         break;
 
         case 'R': //Enter, entrar a otro menu u aun submenu
             
+			switch(FRAME.CURSOR){
+
+				case Clicker: //Posicionado en clicker
+
+					if(FRAME.sCURSOR == EXIT){ //Si no existe el submenu, lo habilita
+						FRAME.sCURSOR = Opcion1;
+
+					}
+					else{ //Si ya existia ejecuta el proximo menu
+
+						//modifica el menu del puntero y el dato
+						G_FRAME.CURSOR = CLICKER;
+						G_FRAME.DATA = FRAME.sCURSOR;
+
+						//Quita el submenu
+						FRAME.sCURSOR = EXIT;
+
+					}
+
+				break;
+
+				case Base:  //Posicionado en Base  
+					//modifica el menu del puntero y el dato
+				
+				break;
+				
+				case EffBase: //Posicionado en EffBase
+					//modifica el menu del puntero y el dato
+				
+				break;
+				
+				case Potencia: //Posicionado en Potencia
+					//modifica el menu del puntero y el dato
+				
+				break;
+				
+				case Ran: //Posicionado en Ran 
+					//modifica el menu del puntero y el dato
+				
+				break;
+				
+				case TAutom: //Posicionado en TAutom 
+					//modifica el menu del puntero y el dato
+				
+				break;
+				
+				case EfAutom: //Posicionado en EfAutom
+					//modifica el menu del puntero y el dato
+
+				break;
+				
+				case Opciones://Posicionado en Opciones
+					//modifica el menu del puntero
+				
+				break;
+			
+				case Partida: //Posicionado en Partida
+
+					if(FRAME.sCURSOR == EXIT){ //Si no existe el submenu, lo habilita
+						FRAME.sCURSOR = Opcion1;
+
+					}
+					else{
+
+						if(FRAME.SURE == 1){
+							
+							//Mofica el puntero de menu y envia el dato
+							
+
+							//Resetea la confirmacion y sale del submenu
+							FRAME.SURE = 0;
+							FRAME.sCURSOR = EXIT;
+
+
+						}else{
+							FRAME.SURE = 1;
+						}
+
+					}
+
+				break;
+
+
+			}
 
         break;
 
         case 'T': //Para ver temporalmente el menu de informacion extra
             
+			//modifica el menu del puntero
 
         break;
 

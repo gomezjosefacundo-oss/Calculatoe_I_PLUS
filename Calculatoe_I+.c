@@ -3,9 +3,6 @@
 
 int main(){
 
-	//Comienzo a contar el tiempo transcurrido
-	G_FRAME.GAME_VALUE->RELOJ.INIT = Tiempo_s(); //Referencia de comienzo de ejecucion
-
 	srand(time(NULL)); //Inizializa el generador de numeros aleatorios
 	
 	while(1){
@@ -27,18 +24,22 @@ int main(){
 			break;
 
 			case TABLA_MEJORAS: 
- 			
+				I_TablaMejoras();
+
 			break;
 
 			case OPCIONES:      
- 			
+				I_Opciones();
+
 			break;
 
 			case PARTIDA:       
- 			
+				I_Partida();
+
 			break;
 
 			case TAB:            
+				I_Tab();
 
 			break;
 

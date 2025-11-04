@@ -131,8 +131,6 @@ void F_Menu(){ //El menu mas importante OMG
 		}
 		
 	}
-	printf("\nDEBUG CURSOR = %d\n", FRAME.CURSOR);
-	printf("DEBUG sCURSOR = %d\n", FRAME.sCURSOR);
 	
 }
 
@@ -196,37 +194,44 @@ void C_Menu(char KEY){ //Calculo del menu
 				break;
 
 				case Base:  //Posicionado en Base  
-					//modifica el menu del puntero y el dato
+					G_FRAME.CURSOR = TABLA_MEJORAS;
+					G_FRAME.DATA = 0;
 				
 				break;
 				
 				case EffBase: //Posicionado en EffBase
-					//modifica el menu del puntero y el dato
+					G_FRAME.CURSOR = TABLA_MEJORAS;
+					G_FRAME.DATA = 1;
 				
 				break;
 				
 				case Potencia: //Posicionado en Potencia
-					//modifica el menu del puntero y el dato
+					G_FRAME.CURSOR = TABLA_MEJORAS;
+					G_FRAME.DATA = 2;
 				
 				break;
 				
 				case Ran: //Posicionado en Ran 
-					//modifica el menu del puntero y el dato
+					G_FRAME.CURSOR = TABLA_MEJORAS;
+					G_FRAME.DATA = 3;
 				
 				break;
 				
 				case TAutom: //Posicionado en TAutom 
-					//modifica el menu del puntero y el dato
+					G_FRAME.CURSOR = TABLA_MEJORAS;
+					G_FRAME.DATA = 4;
 				
 				break;
 				
 				case EfAutom: //Posicionado en EfAutom
-					//modifica el menu del puntero y el dato
+					G_FRAME.CURSOR = TABLA_MEJORAS;
+					G_FRAME.DATA = 5;
 
 				break;
 				
 				case Opciones://Posicionado en Opciones
 					//modifica el menu del puntero
+					G_FRAME.CURSOR = OPCIONES;
 				
 				break;
 			
@@ -241,7 +246,8 @@ void C_Menu(char KEY){ //Calculo del menu
 						if(FRAME.SURE == 1){
 							
 							//Mofica el puntero de menu y envia el dato
-							
+							G_FRAME.CURSOR = PARTIDA;
+							G_FRAME.DATA = FRAME.sCURSOR;
 
 							//Resetea la confirmacion y sale del submenu
 							FRAME.SURE = 0;
@@ -263,12 +269,10 @@ void C_Menu(char KEY){ //Calculo del menu
 
         case 'T': //Para ver temporalmente el menu de informacion extra
             
-			//modifica el menu del puntero
+			G_FRAME.CURSOR = TAB;
 
         break;
 
 	}
-
-	KEY = 0; //Tecla leida
 
 }

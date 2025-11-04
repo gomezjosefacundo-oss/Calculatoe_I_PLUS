@@ -17,24 +17,25 @@ DEF_GAME_VALUE GAME_VALUE = {
 
 		.EXTRA_Base = 5,
 		.EXTRA_Porcentual = 0.005, //0.5%
+		.EXTRA_LvBase = 0,
+		.EXTRA_LvPorc = 0,
 
-        .Click = 0, //Valor constante del click
+		.secGUARDADO = 0, //No hay partida guardada al comienzo
 		.Ans = 0 //No puntos(? :c
 
 	},
 
 	.RELOJ = {
 
-		.TIME = 0, //Almacenado en SEGUNDOS
-		.INIT = 0, //Desde ahora en SEGUNDOS
-		.NOW = 0 //Consulta en SEGUNDOS
+		.savedTIME = 0, //Almacenado en SEGUNDOS
+		.TIME = 0 //Consulta en SEGUNDOS
 
 	},
 
 	.OPCIONES = {
 
-		.ShowClick = 0,  //DEF. No muestra el valor del click
-		.ShowDelay = 0  //DEF. No muestra retraso entre clicks autom
+		.ShowDelay = 0,  //DEF. No muestra retraso entre clicks autom
+		.ShowClick = 0  //DEF. No muestra el valor del click
 
 	}
 

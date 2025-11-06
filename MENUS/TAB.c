@@ -76,6 +76,8 @@ void F_Tab(){
 //El que evalua a que llamar o que hacer con cada accion
 void C_Tab(){
 
+    actEXTRA(); //Actualiza referencia del extra por segundo
+
     int Second = 0;
     while(!(kbhit() || Second > 1000)){
         Sleep(100);

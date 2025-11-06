@@ -141,7 +141,9 @@ void actTIME(); //Actualiza el tiempo total para TIME
 
 float Click_Event(int EVENTO, int AUTOM); //EVETO "0"-Promedio(numero) "1"-Real+!TEXTO! //AUTOM "0"-Manual "1"-Autom
 
-void BarraProgrecion();
+void BarraProgrecion(); // Inclusion didactica de cuan avanzado se esta en el juego :)
+
+void cappaDelay(); //Un limitador para desincentivar al uso de autoclickers, de forma modesta no brusca
 
 
 // *** ESTRUCTURAS GLOBALES ***

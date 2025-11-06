@@ -6,6 +6,8 @@ int main(){
 	srand(time(NULL)); //Inizializa el generador de numeros aleatorios
 	
 	while(1){
+
+		actEXTRA(); //Actualiza referencia del extra
 		
 		switch(G_FRAME.CURSOR){
 			case INTRO:

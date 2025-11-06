@@ -184,6 +184,13 @@ void C_TablaMejoras(){
 
             *FRAME.BASE += FRAME.MEJORAS[KEY].MEJORA; //Da la mejora
 
+            //Si el valor base de mejora es mayor que la maxima de todas, clipea a la maxima...
+            if(G_FRAME.DATA != TAutom)
+                if(*FRAME.BASE > FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX) *FRAME.BASE = FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX;
+            else //Exclusivo para el tiempo autom que recude en lugar de aumentar
+                if(*FRAME.BASE < FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX) *FRAME.BASE = FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX;
+
+            // COMO CALCULAR LA GANANCIA RESULTANTE DE LA MEJORA
             if(G_FRAME.DATA == EffAutom){
                 
                 FRAME.ClickDelta =  Click_Event(0, 1) - FRAME.ClickInicial; //Variacion con el click anterior

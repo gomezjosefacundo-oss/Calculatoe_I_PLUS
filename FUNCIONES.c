@@ -1,7 +1,52 @@
 //Definicion de todas las funciones globales de uso en todo el juego
 #include "MENUS/Public.h"
 
+void cappaDelay(){ //Genera un retraso en ms segun la persistencia y la velocidad de clicks por segundo....
 
+    static float T_out = 0, T_in = 0, CPS = 0; /*Clics por segundo*/ //Referencias de tiempo internas
+    static int cappa = 0, warning = 0; /*memoria de limite*/; 
+    
+    T_in = (float)clock()/CLOCKS_PER_SEC; //Medida de llegada
+    
+    CPS = 1/(T_in - T_out); //Parametro de referencia de velocidad
+    
+    //printf("\n\nCPS : %.4fseg. cappa = %d warining = %d\n\n", CPS, cappa, warning);
+    
+    if(CPS > 13) cappa += 10; //10ms mas de delay siempre que se tenga mas de 7 clicks por segundo
+    else if (CPS < 9 && cappa >= 5) cappa -= 5; // Si exite limite resta cuando haya ido muy rapido 
+
+    if(cappa >= 75 && warning >= 0){
+        warning += 1;
+    }else if(warning >= 0){
+        warning = 0;  
+    } 
+
+    if (warning >= 20){
+        cappa = 1500;
+        warning = -1;
+        printf("\n\n[ SI USA TRAMPAS SEA MENOS DESCARADO :D ]\n\n");
+    }
+
+    if(warning == -1){
+
+        cappa -= 25;
+
+        if(cappa < 75) {
+            warning = 0;
+            printf("\n\n[ BUENO... ESTAS LIBRE, PERO QUE NO SE REPITA XD ]\n\n");
+
+            while(kbhit()){ //Gasta todos los clicks acumulados sin querer
+                getKEY();
+            }
+        }
+
+    }
+
+    Sleep(cappa); //Delay base + Limite
+
+    T_out = T_in; //t1 alamacena el tiempo justo antes de salir
+
+}
 
 float Click_Event(int EVENTO, int AUTOM){ //EVETO "0"-Promedio(numero) "1"-Real+!TEXTO! //AUTOM "0"-Manual "1"-Autom
 

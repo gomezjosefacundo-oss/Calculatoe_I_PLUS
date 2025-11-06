@@ -108,6 +108,10 @@ void C_Clicker(){
         case 'R': //Click indicado
             if(G_FRAME.DATA != AUTOMATICO){ // Prevencion de clicks manuales en modo automatico
                
+                actEXTRA(); //Actualiza referencia del extra tras un click manual
+
+                cappaDelay(); //Funcion para evitar el autoclicker de forma MODESTA solamente...
+
                 FRAME.Verify_C = 1;
     
                 FRAME.Click = Click_Event(1, 0);
@@ -134,6 +138,8 @@ void C_Clicker(){
             FRAME.Time_Trans += 100;
 
             if(FRAME.Time_Trans >= FRAME.Time_Autom){
+
+                actEXTRA(); //Actualiza referencia del extra tras un click autom
 
                 FRAME.Verify_C = 1;
     

@@ -31,7 +31,7 @@ static struct{
 
     .CANTIDAD = 0,
     .MEJORAS = NULL,
-    .BASE = 0,
+    .BASE = NULL,
 
     .BUY = 0, //0.NADA 1.COMRPO 2.ERROR
 
@@ -51,44 +51,49 @@ static struct{
 
 };
 
+
+
 //Funcion inicializadora y loop del menu
 void I_TablaMejoras(){
 
+    VALORES_T *REF_valores = &G_FRAME.GAME_VALUE->VALORES;
+    CANTIDAD_T *REF_cantidad = &GLOBAL_MEJORAS.CANTIDAD_TYPE;
+
     switch(G_FRAME.DATA){ //Preparar datos...
         case Base:
-            FRAME.CANTIDAD = GLOBAL_MEJORAS.CANTIDAD_TYPE.c_BASE;
+            FRAME.CANTIDAD = REF_cantidad->c_BASE;
             FRAME.MEJORAS = GLOBAL_MEJORAS.BASE;
-            FRAME.BASE = &G_FRAME.GAME_VALUE->VALORES.Base;
+            FRAME.BASE = &REF_valores->Base;
         break;
 
         case EffBase:
-            FRAME.CANTIDAD = GLOBAL_MEJORAS.CANTIDAD_TYPE.c_EFICIENCIA;
+            FRAME.CANTIDAD = REF_cantidad->c_EFICIENCIA;
             FRAME.MEJORAS = GLOBAL_MEJORAS.EFICIENCIA;
-            FRAME.BASE = &G_FRAME.GAME_VALUE->VALORES.Eficiencia;
+            FRAME.BASE = &REF_valores->Eficiencia;
         break;
         
         case Potencia:
-            FRAME.CANTIDAD = GLOBAL_MEJORAS.CANTIDAD_TYPE.c_POTENCIA;
+            FRAME.CANTIDAD = REF_cantidad->c_POTENCIA;
             FRAME.MEJORAS = GLOBAL_MEJORAS.POTENCIA;
-            FRAME.BASE = &G_FRAME.GAME_VALUE->VALORES.Potencia;
+            FRAME.BASE = &REF_valores->Potencia;
         break;
             
         case Ran:
-            FRAME.CANTIDAD = GLOBAL_MEJORAS.CANTIDAD_TYPE.c_RAN;
+            FRAME.CANTIDAD = REF_cantidad->c_RAN;
             FRAME.MEJORAS = GLOBAL_MEJORAS.RAN;
-            FRAME.BASE = &G_FRAME.GAME_VALUE->VALORES.Ran;
+            FRAME.BASE = &REF_valores->Ran;
         break;
         
         case TAutom:
-            FRAME.CANTIDAD = GLOBAL_MEJORAS.CANTIDAD_TYPE.c_TI_AUTOM;
+            FRAME.CANTIDAD = REF_cantidad->c_TI_AUTOM;
             FRAME.MEJORAS = GLOBAL_MEJORAS.TI_AUTOM;
-            FRAME.BASE = &G_FRAME.GAME_VALUE->VALORES.Time_Autom;
+            FRAME.BASE = &REF_valores->Time_Autom;
         break;
         
         case EffAutom:
-            FRAME.CANTIDAD = GLOBAL_MEJORAS.CANTIDAD_TYPE.c_EF_AUTOM;
+            FRAME.CANTIDAD = REF_cantidad->c_EF_AUTOM;
             FRAME.MEJORAS = GLOBAL_MEJORAS.EF_AUTOM;
-            FRAME.BASE = &G_FRAME.GAME_VALUE->VALORES.Eff_Autom;
+            FRAME.BASE = &REF_valores->Eff_Autom;
         break;
         
     }
@@ -110,6 +115,9 @@ void I_TablaMejoras(){
 
 //El generador del frame en si
 void F_TablaMejoras(){
+
+    VALORES_T *REF_valores = &G_FRAME.GAME_VALUE->VALORES;
+    CANTIDAD_T *REF_cantidad = &GLOBAL_MEJORAS.CANTIDAD_TYPE;
 
     system("cls");
 
@@ -138,7 +146,7 @@ void F_TablaMejoras(){
         printf(" %02d -> %10.7g | %10.7gp | %+8.7g \n", i, FRAME.MEJORAS[i].MAX, FRAME.MEJORAS[i].PRECIO, FRAME.MEJORAS[i].MEJORA);
     }
 
-    printf("\nAns = %.7gp || %s = %.7g \n", G_FRAME.GAME_VALUE->VALORES.Ans, FRAME.TEXT_MEJORAS[G_FRAME.DATA], *FRAME.BASE);
+    printf("\nAns = %.7gp || %s = %.7g \n", REF_valores->Ans, FRAME.TEXT_MEJORAS[G_FRAME.DATA], *FRAME.BASE);
 
     if(G_FRAME.DATA == EffAutom) printf("AUTO");
     if(G_FRAME.DATA == TAutom) printf("Hr-");
@@ -158,6 +166,9 @@ void F_TablaMejoras(){
 //El que evalua a que llamar o que hacer con cada accion
 void C_TablaMejoras(){
 
+    VALORES_T *REF_valores = &G_FRAME.GAME_VALUE->VALORES;
+    CANTIDAD_T *REF_cantidad = &GLOBAL_MEJORAS.CANTIDAD_TYPE;
+
     int KEY = 0;
 
     scanf(" %d", &KEY);
@@ -176,19 +187,29 @@ void C_TablaMejoras(){
             if(*FRAME.BASE < FRAME.MEJORAS[KEY].MAX) MAXcond = 1;
         }
         
-        if(G_FRAME.GAME_VALUE->VALORES.Ans >= FRAME.MEJORAS[KEY].PRECIO && MAXcond){ //Verifico si alcanza a comprar
+        if(REF_valores->Ans >= FRAME.MEJORAS[KEY].PRECIO && MAXcond){ //Verifico si alcanza a comprar
 
             MAXcond = 0; //Reset
 
-            G_FRAME.GAME_VALUE->VALORES.Ans -= FRAME.MEJORAS[KEY].PRECIO; //Resta puntos
+            REF_valores->Ans -= FRAME.MEJORAS[KEY].PRECIO; //Resta puntos
 
             *FRAME.BASE += FRAME.MEJORAS[KEY].MEJORA; //Da la mejora
 
             //Si el valor base de mejora es mayor que la maxima de todas, clipea a la maxima...
-            if(G_FRAME.DATA != TAutom)
-                if(*FRAME.BASE > FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX) *FRAME.BASE = FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX;
-            else //Exclusivo para el tiempo autom que recude en lugar de aumentar
-                if(*FRAME.BASE < FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX) *FRAME.BASE = FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX;
+            if(G_FRAME.DATA != TAutom){
+                if(*FRAME.BASE > FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX){
+                    
+                    *FRAME.BASE = FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX;
+                }
+            }
+            else{ //Exclusivo para el tiempo autom que recude en lugar de aumentar
+                if(*FRAME.BASE < FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX){
+                    
+                    *FRAME.BASE = FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX;
+
+                }
+                
+            } 
 
             // COMO CALCULAR LA GANANCIA RESULTANTE DE LA MEJORA
             if(G_FRAME.DATA == EffAutom){
@@ -197,8 +218,8 @@ void C_TablaMejoras(){
                 FRAME.ClickInicial = Click_Event(0, 1); //Nuevo valor de click
             }
             else if(G_FRAME.DATA == TAutom){
-                FRAME.ClickDelta =  Click_Event(0, 1)*(3600/(G_FRAME.GAME_VALUE->VALORES.Time_Autom/1000)) - FRAME.ClickInicial;
-                FRAME.ClickInicial = Click_Event(0, 1)*(3600/(G_FRAME.GAME_VALUE->VALORES.Time_Autom/1000)); 
+                FRAME.ClickDelta =  Click_Event(0, 1)*(3600/(REF_valores->Time_Autom/1000)) - FRAME.ClickInicial;
+                FRAME.ClickInicial = Click_Event(0, 1)*(3600/(REF_valores->Time_Autom/1000)); 
             }
             else{
                 FRAME.ClickDelta = Click_Event(0, 0) - FRAME.ClickInicial; 

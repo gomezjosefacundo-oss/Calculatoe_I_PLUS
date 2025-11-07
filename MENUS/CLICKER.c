@@ -11,11 +11,23 @@ typedef enum{
 
 } DATA;
 
+typedef enum{
+
+    NADA,        //0 - No aplica
+    TABABULADOR,         //1 - Espera un UP
+    BLOQUEADO,   //2 - BLoqueado
+    DESBLOQUEADO //3- Desbloqueado 
+
+}TAB_UP_ENUM;
+
 //Definiciones del menu (existe static struct FRAME, enums necesarios y otros)
 static struct{
     int First; //Verificador de mensaje de entrada 1-Escribre 0-Ignora
     int Verify_C; //Indicador de click dado por el C_
     int Verify_T; //Accion de mostrar valor de CLick con TAB
+    int Verify_TAB_UP; //Para bloquear el modo autom y que no se salga sin querer
+    int BLOQUEO; //Estado absoluto
+    int BLOQUEOdelta; //Detecta cuando cambia de estado el bloqueo
     float Click; //Valo pasado por C_ del click
     int Time_Autom; //Memoria de espera para un click automatico
     int Time_Trans; //Contador de tiempo
@@ -23,6 +35,9 @@ static struct{
 } FRAME = {
     .First = 1,
     .Verify_C = 0,
+    .Verify_TAB_UP = NADA,
+    .BLOQUEO = DESBLOQUEADO,
+    .BLOQUEOdelta = 0,
     .Click = 0,
     .Time_Autom = 10000,
     .Time_Trans = 0
@@ -54,6 +69,9 @@ void F_Clicker(){
         printf("Apreta TAB para ver el valor de cuanto ganaras");
         if(G_FRAME.DATA == MANUAL) printf(" por 500 clicks! \nApreta derecha para Sumar!\n");
         if(G_FRAME.DATA == AUTOMATICO) printf(" por 1 hora! \nTu delay es %.2f por click!\n", (float)FRAME.Time_Autom/1000);
+        
+        printf("\nApreta TAB + UP para bloquear el menu y no salir sin querer!\n\n");
+
 
         Sleep(300);
 
@@ -71,11 +89,23 @@ void F_Clicker(){
         
         printf("\n");
     }
-    
-    if(G_FRAME.DATA == AUTOMATICO)
-        if(G_FRAME.GAME_VALUE->OPCIONES.ShowDelay) printf("-> %.7gs ", (float)FRAME.Time_Trans/1000); //Muestra delay
 
-    if(FRAME.Verify_T == 1){ //Mostrar TAB
+    if(FRAME.BLOQUEOdelta == 1){
+        FRAME.BLOQUEOdelta = 0;
+
+        if(FRAME.BLOQUEO == DESBLOQUEADO) printf("[! ESTAS DESBLOQUEADO !]");
+        if(FRAME.BLOQUEO == BLOQUEADO) printf("[! ESTAS BLOQUEADO !]");
+    }
+    
+    if(G_FRAME.DATA == AUTOMATICO){
+        
+        if(G_FRAME.GAME_VALUE->OPCIONES.ShowDelay){
+            
+            printf("-> %.7gs ", (float)FRAME.Time_Trans/1000); //Muestra delay
+        } 
+    }
+
+    if(FRAME.Verify_T == 1){ //Mostrar TABABULADOR
 
         if(G_FRAME.DATA == MANUAL){
             printf("\n\n!Ganaras > %.7gp < con 500 clicks!\n\n", Click_Event(0, 0)*500);
@@ -87,6 +117,8 @@ void F_Clicker(){
 
         Sleep(1000);
         FRAME.Verify_T = 0; //Leido
+
+        FRAME.Verify_TAB_UP = TABABULADOR; //TEMPORAL PARA LEER UP y bloquear o desbloquear
     }
 
 }
@@ -97,8 +129,13 @@ void C_Clicker(){
     char KEY;
 
     if(G_FRAME.DATA == MANUAL || kbhit()){ //Lee tecla si esta en manual (para click) o para salir del clicker en Automatico
-
+        
+        
+        while(GetAsyncKeyState(VK_RIGHT)){
+            Sleep(30);
+        }
         KEY = getKEY();
+        
 
     }else{
         KEY = 'A';
@@ -110,8 +147,6 @@ void C_Clicker(){
                
                 actEXTRA(); //Actualiza referencia del extra tras un click manual
 
-                cappaDelay(); //Funcion para evitar el autoclicker de forma MODESTA solamente...
-
                 FRAME.Verify_C = 1;
     
                 FRAME.Click = Click_Event(1, 0);
@@ -122,8 +157,26 @@ void C_Clicker(){
         break;
 
         case 'L': //Deja el menu
-            G_FRAME.CURSOR = MENU;
-            G_FRAME.DATA = 0; //Mata el dato
+            
+            if(FRAME.BLOQUEO == DESBLOQUEADO){
+
+                G_FRAME.CURSOR = MENU;
+                G_FRAME.DATA = 0; //Mata el dato
+            }
+
+        break;
+
+        case 'U':
+
+            if(FRAME.Verify_TAB_UP == TABABULADOR){
+                if(FRAME.BLOQUEO == DESBLOQUEADO){
+                    FRAME.BLOQUEO = BLOQUEADO;
+                }else{
+                    FRAME.BLOQUEO = DESBLOQUEADO;
+                }
+
+                FRAME.BLOQUEOdelta = 1;
+            }
 
         break;
 
@@ -153,4 +206,6 @@ void C_Clicker(){
         break;
 
     }
+
+    FRAME.Verify_TAB_UP = NADA;
 }

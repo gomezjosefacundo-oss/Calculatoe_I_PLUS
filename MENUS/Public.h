@@ -7,6 +7,7 @@
 #include <conio.h> //Para el getch(.) y kbhit()
 #include <time.h> //Para los datos clock_t y el uso de clock(); //Retornan en milis
 #include <math.h> //Para calcular la pow() de un numero
+#include <winuser.h> //Para el GetAsyncKeyState()
 
 // *** TYPEDEF GLOBALES ***
 typedef long reloj_s;
@@ -142,8 +143,6 @@ void actTIME(); //Actualiza el tiempo total para TIME
 float Click_Event(int EVENTO, int AUTOM); //EVETO "0"-Promedio(numero) "1"-Real+!TEXTO! //AUTOM "0"-Manual "1"-Autom
 
 void BarraProgrecion(); // Inclusion didactica de cuan avanzado se esta en el juego :)
-
-void cappaDelay(); //Un limitador para desincentivar al uso de autoclickers, de forma modesta no brusca
 
 
 // *** ESTRUCTURAS GLOBALES ***

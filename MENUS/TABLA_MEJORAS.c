@@ -1,27 +1,27 @@
-#include "Public.h"
+#include "../HEADER/Public.h"
 
-//Prototipos
+/// @brief Prototipo funcion FRAME
 void F_TablaMejoras();
+/// @brief Prototipo funcion CALCULADORA
 void C_TablaMejoras();
 
 //Definiciones del menu (existe static struct FRAME, enums necesarios y otros)
-typedef enum{
-    Base,      // 0
-    EffBase,   // 1
-    Potencia,  // 2
-    Ran,       // 3
-    TAutom,    // 4
-    EffAutom   // 5
-} REF_MEJORA;
+
+#define D_Base     0  // 0
+#define D_EffBase  1  // 1
+#define D_Potencia 2  // 2
+#define D_Ran      3  // 3
+#define D_TAutom   4  // 4
+#define D_EffAutom 5  // 5
+
 
 static struct{
 
-    int CANTIDAD; //Por defecto de cantidad de mejoras de un tipo de mejora
-    NIVEL *MEJORAS; //Puntero al arreglo de la mejora que toque
-    float *BASE; //El valor de la mejora que toco en tu actual
-
     float ClickInicial;
     float ClickDelta; //Ambos sirven para ver la mejora resultante
+
+    float HrClickInicial;
+    float HrClickDelta; //Segundo parametro de mejoras visibles
 
     int BUY; //Aviso del C_ de que se compro algo
 
@@ -29,14 +29,13 @@ static struct{
 
 } FRAME = {
 
-    .CANTIDAD = 0,
-    .MEJORAS = NULL,
-    .BASE = NULL,
-
     .BUY = 0, //0.NADA 1.COMRPO 2.ERROR
 
     .ClickInicial = 0,
     .ClickDelta = 0,
+
+    .HrClickInicial = 0,
+    .HrClickDelta = 0,
 
     .TEXT_MEJORAS = {
 
@@ -53,56 +52,16 @@ static struct{
 
 
 
-//Funcion inicializadora y loop del menu
+///@brief Funcion inicializadora y loop del menu
 void I_TablaMejoras(){
 
-    VALORES_T *REF_valores = &G_FRAME.GAME_VALUE->VALORES;
-    CANTIDAD_T *REF_cantidad = &GLOBAL_MEJORAS.CANTIDAD_TYPE;
+    FRAME.HrClickInicial = Click_Event(0, 1)*(3600/(G_FRAME.GAME_VALUE.VALORES.Time_Autom/1000));
 
-    switch(G_FRAME.DATA){ //Preparar datos...
-        case Base:
-            FRAME.CANTIDAD = REF_cantidad->c_BASE;
-            FRAME.MEJORAS = GLOBAL_MEJORAS.BASE;
-            FRAME.BASE = &REF_valores->Base;
-        break;
-
-        case EffBase:
-            FRAME.CANTIDAD = REF_cantidad->c_EFICIENCIA;
-            FRAME.MEJORAS = GLOBAL_MEJORAS.EFICIENCIA;
-            FRAME.BASE = &REF_valores->Eficiencia;
-        break;
-        
-        case Potencia:
-            FRAME.CANTIDAD = REF_cantidad->c_POTENCIA;
-            FRAME.MEJORAS = GLOBAL_MEJORAS.POTENCIA;
-            FRAME.BASE = &REF_valores->Potencia;
-        break;
-            
-        case Ran:
-            FRAME.CANTIDAD = REF_cantidad->c_RAN;
-            FRAME.MEJORAS = GLOBAL_MEJORAS.RAN;
-            FRAME.BASE = &REF_valores->Ran;
-        break;
-        
-        case TAutom:
-            FRAME.CANTIDAD = REF_cantidad->c_TI_AUTOM;
-            FRAME.MEJORAS = GLOBAL_MEJORAS.TI_AUTOM;
-            FRAME.BASE = &REF_valores->Time_Autom;
-        break;
-        
-        case EffAutom:
-            FRAME.CANTIDAD = REF_cantidad->c_EF_AUTOM;
-            FRAME.MEJORAS = GLOBAL_MEJORAS.EF_AUTOM;
-            FRAME.BASE = &REF_valores->Eff_Autom;
-        break;
-        
-    }
-
-    if(G_FRAME.DATA == EffAutom) FRAME.ClickInicial = Click_Event(0, 1);
-    else if(G_FRAME.DATA == TAutom) FRAME.ClickInicial = Click_Event(0, 1)*(3600/(G_FRAME.GAME_VALUE->VALORES.Time_Autom/1000));
+    if(G_FRAME.DATA == D_EffAutom || G_FRAME.DATA == D_TAutom) FRAME.ClickInicial = Click_Event(0, 1);
     else FRAME.ClickInicial = Click_Event(0, 0);
 
     FRAME.ClickDelta = 0;
+    FRAME.HrClickDelta = 0;
 
     while(G_FRAME.CURSOR == TABLA_MEJORAS){
 
@@ -113,11 +72,18 @@ void I_TablaMejoras(){
 
 }
 
-//El generador del frame en si
+///@brief El generador del frame en si
 void F_TablaMejoras(){
 
-    VALORES_T *REF_valores = &G_FRAME.GAME_VALUE->VALORES;
+    VALORES_T *REF_valores = &G_FRAME.GAME_VALUE.VALORES;
     CANTIDAD_T *REF_cantidad = &GLOBAL_MEJORAS.CANTIDAD_TYPE;
+    OPCIONES_T *REF_opciones = &G_FRAME.GAME_VALUE.OPCIONES;
+
+    int *Cantidad = REF_cantidad->P_CANTIDAD[G_FRAME.DATA];
+    NIVEL *Mejora = GLOBAL_MEJORAS.P_MEJORAS[G_FRAME.DATA];
+    float *Base = REF_valores->P_PARAMETROS[G_FRAME.DATA];
+ 
+    char* TEXT = FRAME.TEXT_MEJORAS[G_FRAME.DATA];
 
     system("cls");
 
@@ -132,42 +98,69 @@ void F_TablaMejoras(){
 
         break;
     }
-    if(FRAME.BUY > 0){
+
+    if(FRAME.BUY != 0){
         Sleep(2500);
         system("cls");
     }
 
-    printf("-Mejoras de %s- \n\n", FRAME.TEXT_MEJORAS[G_FRAME.DATA]);
-    printf("Escriba el Numero de la mejora que desee.\n -1 = Salir || 0..%d = Seleccionar \n\n", FRAME.CANTIDAD - 1);
-    printf("Indice | Limite   | Coste       | Mejora \n");
+    printf("-Mejoras de %s- \n\n", TEXT);
+    printf("Escriba el Numero de la mejora que desee.\n -1 = Salir || 0..%d = Seleccionar \n\n", *Cantidad - 1);
+    printf(" ID ->       Limite |         Coste |      Mejora \n");
     
-    for(int i = 0; i < FRAME.CANTIDAD; i++){
+    for(int i = 0; i < *Cantidad; i++){
 
-        printf(" %02d -> %10.7g | %10.7gp | %+8.7g \n", i, FRAME.MEJORAS[i].MAX, FRAME.MEJORAS[i].PRECIO, FRAME.MEJORAS[i].MEJORA);
+        printf(" %02d -> %12.6g | %12.6gp | %+11.6g", i, Mejora[i].MAX, Mejora[i].PRECIO, Mejora[i].MEJORA);
+    
+        //Que no sea una mejora superada y que no sea absurdamente cara \\ ademas verifica que la opcion este activada
+        if(REF_opciones->ShowCostClick){
+
+            if( Mejora[i].PRECIO / FRAME.ClickInicial <= 10000 ){
+            
+                int print = 0;
+                //Valida el tipo de texto a aparecer segun el parametro
+                if(G_FRAME.DATA != D_TAutom){
+                    if(*Base < Mejora[i].MAX) print = 1;
+                }
+                else {
+                    if(*Base > Mejora[i].MAX) print = 1;
+                }
+                
+                if(print == 1) 
+                    printf(" -> %.0fClk (%.0fHr-Clk)", Mejora[i].PRECIO / FRAME.ClickInicial, Mejora[i].PRECIO / FRAME.HrClickInicial); 
+            }
+        }
+
+        printf("\n");
     }
 
-    printf("\nAns = %.7gp || %s = %.7g \n", REF_valores->Ans, FRAME.TEXT_MEJORAS[G_FRAME.DATA], *FRAME.BASE);
+    printf("\nAns = %.6gp || %s = %.6g \n", REF_valores->Ans, TEXT, *Base);
 
-    if(G_FRAME.DATA == EffAutom) printf("AUTO");
-    if(G_FRAME.DATA == TAutom) printf("Hr-");
+    if(G_FRAME.DATA == D_EffAutom || G_FRAME.DATA == D_TAutom) printf("AUTO");
 
-    printf("Click = %.7gp", FRAME.ClickInicial);
+    printf("Click = %.6gp || Hr-Click = %.6gp/Hr", FRAME.ClickInicial, FRAME.HrClickInicial);
 
     if(FRAME.BUY == 1){
 
-        printf(" +%.7gp\n", FRAME.ClickDelta);
-    }else printf("\n\n");
+        printf(" +%.6gp (+%.6gp/Hr)", FRAME.ClickDelta, FRAME.HrClickDelta);
+    }
+    
+    printf("\n\n");
 
     printf("MEJORA -> ");
 
     FRAME.BUY = 0;
 }
 
-//El que evalua a que llamar o que hacer con cada accion
+///@brief El que evalua a que llamar o que hacer con cada accion
 void C_TablaMejoras(){
 
-    VALORES_T *REF_valores = &G_FRAME.GAME_VALUE->VALORES;
+    VALORES_T *REF_valores = &G_FRAME.GAME_VALUE.VALORES;
     CANTIDAD_T *REF_cantidad = &GLOBAL_MEJORAS.CANTIDAD_TYPE;
+
+    int* Cantidad = REF_cantidad->P_CANTIDAD[G_FRAME.DATA];
+    NIVEL* Mejora = GLOBAL_MEJORAS.P_MEJORAS[G_FRAME.DATA];
+    float* Base = REF_valores->P_PARAMETROS[G_FRAME.DATA];
 
     int KEY = 0;
 
@@ -177,63 +170,59 @@ void C_TablaMejoras(){
         G_FRAME.CURSOR = MENU; //Vuelve al menu principal
         G_FRAME.DATA = 0;
     }
-    else if(KEY >= 0 && KEY < FRAME.CANTIDAD){
+    else if(KEY >= 0 && KEY < *Cantidad){
 
         int MAXcond = 0;
-        if(G_FRAME.DATA == TAutom){ //Condicion especial por el negativo de Las mejora de tiempo
-            if(*FRAME.BASE > FRAME.MEJORAS[KEY].MAX) MAXcond = 1;
-             
+        if(G_FRAME.DATA == D_TAutom){ //Condicion especial por el negativo de Las mejora de tiempo
+            if(*Base > Mejora[KEY].MAX) MAXcond = 1;
+
         }else{
-            if(*FRAME.BASE < FRAME.MEJORAS[KEY].MAX) MAXcond = 1;
+            if(*Base < Mejora[KEY].MAX) MAXcond = 1;
         }
         
-        if(REF_valores->Ans >= FRAME.MEJORAS[KEY].PRECIO && MAXcond){ //Verifico si alcanza a comprar
+        if(REF_valores->Ans >= Mejora[KEY].PRECIO && MAXcond){ //Verifico si alcanza a comprar
 
             MAXcond = 0; //Reset
 
-            REF_valores->Ans -= FRAME.MEJORAS[KEY].PRECIO; //Resta puntos
+            REF_valores->Ans -= Mejora[KEY].PRECIO; //Resta puntos
 
-            *FRAME.BASE += FRAME.MEJORAS[KEY].MEJORA; //Da la mejora
+            *Base += Mejora[KEY].MEJORA; //Da la mejora
 
             //Si el valor base de mejora es mayor que la maxima de todas, clipea a la maxima...
-            if(G_FRAME.DATA != TAutom){
-                if(*FRAME.BASE > FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX){
-                    
-                    *FRAME.BASE = FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX;
-                }
+            if(G_FRAME.DATA != D_TAutom){
+                if(*Base > Mejora[*Cantidad-1].MAX) *Base = Mejora[*Cantidad-1].MAX;
+
             }
             else{ //Exclusivo para el tiempo autom que recude en lugar de aumentar
-                if(*FRAME.BASE < FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX){
-                    
-                    *FRAME.BASE = FRAME.MEJORAS[FRAME.CANTIDAD-1].MAX;
-
-                }
+                if(*Base < Mejora[*Cantidad-1].MAX) *Base = Mejora[*Cantidad-1].MAX;
                 
             } 
 
             // COMO CALCULAR LA GANANCIA RESULTANTE DE LA MEJORA
-            if(G_FRAME.DATA == EffAutom){
+            if(G_FRAME.DATA == D_EffAutom || G_FRAME.DATA == D_TAutom){
                 
                 FRAME.ClickDelta =  Click_Event(0, 1) - FRAME.ClickInicial; //Variacion con el click anterior
                 FRAME.ClickInicial = Click_Event(0, 1); //Nuevo valor de click
-            }
-            else if(G_FRAME.DATA == TAutom){
-                FRAME.ClickDelta =  Click_Event(0, 1)*(3600/(REF_valores->Time_Autom/1000)) - FRAME.ClickInicial;
-                FRAME.ClickInicial = Click_Event(0, 1)*(3600/(REF_valores->Time_Autom/1000)); 
             }
             else{
                 FRAME.ClickDelta = Click_Event(0, 0) - FRAME.ClickInicial; 
                 FRAME.ClickInicial = Click_Event(0, 0); 
             }
-
+            
+            FRAME.HrClickDelta =  Click_Event(0, 1)*(3600/(REF_valores->Time_Autom/1000)) - FRAME.HrClickInicial;
+            FRAME.HrClickInicial = Click_Event(0, 1)*(3600/(REF_valores->Time_Autom/1000)); 
+        
             FRAME.BUY = 1; //Compra efectiva
 
-        }else{
+        }
+        else{
             FRAME.BUY = 2; //La mejora no es posible
         }
 
-    }else{
+    }
+    else{
         FRAME.BUY = 2; //La mejora no existe
+
     }
 
 

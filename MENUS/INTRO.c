@@ -1,24 +1,26 @@
 //Definiciones de la animacion inicial
 
-#include "Public.h"
+#include "../HEADER/Public.h"
 
-
-//Prototipos
+/// @brief Prototipo funcion FRAME
 void F_Intro();
+/// @brief Prototipo funcion CALCULADORA
 void C_Intro(char);
 
 
-static struct{ //Definicion de constantes de animacion.
-    //Punteros a cadenas constantes - - -
+/// @brief Definicion de constantes de animacion.
+static struct{ 
+
+    
+    /// @brief Cadenas de caracteres de animacion (0-8) + vercion, autor y final (9-11)
     char *INTRO[12];
     char VERCION[20];
     char AUTOR[20];
-    //- Secuencia de animacion (9), + info compilacion (3)	
     
 } FRAME = {
-    
-    .VERCION = "1.4.37.28+11", //Vercion TOTAL | Grandes añadidos | Pequeños añadidos | Bugs
+
     .AUTOR = "Signal oH",
+    .VERCION = "1.4.43.34+24",
 
     .INTRO = {
         [ 0] = "                                       ..\n",
@@ -40,6 +42,7 @@ static struct{ //Definicion de constantes de animacion.
 
 };
 
+
 void I_Intro(){
 
     while(G_FRAME.CURSOR == INTRO){
@@ -51,7 +54,7 @@ void I_Intro(){
 
 }
 
-void F_Intro(){ //Animacion de inicio
+void F_Intro(){
 
 	system("cls");
 	

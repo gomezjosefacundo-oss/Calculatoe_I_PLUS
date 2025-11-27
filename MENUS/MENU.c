@@ -1,9 +1,10 @@
 //MENU PRINCIPAL DEL JUEGO
 
-#include "Public.h"
+#include "../HEADER/Public.h"
 
-//Prototipos
+/// @brief Prototipo funcion FRAME
 void F_Menu();
+/// @brief Prototipo funcion CALCULADORA
 void C_Menu(char);
 
 typedef enum{
@@ -32,21 +33,23 @@ typedef enum{
 
 
 
-static struct{ //Definicion de todos los frames del menu, CONST
-	//Punteros a cadenas constantes - - -
+/// @brief Definicion de todos los frames del menu, CONST
+static struct{ 
 
-	subCursor sCURSOR; //Memoria de si existe un submenu y su posicion (NO-arriba-abajo)
+	/// @brief Memoria de si existe un submenu y su posicion (NO-arriba-abajo)
+	subCursor sCURSOR; 
 
-	Cursor CURSOR; //Memoria de donde esta el usuario en el menu.
+	/// @brief Memoria de donde esta el usuario en el menu.
+	Cursor CURSOR; 
 	
-	int SURE; //Variable Auxiliar de seguro	(0-> nada || 1-> Seguro?)
+	/// @brief Variable Auxiliar de seguro (0-> nada || 1-> Seguro?)
+	int SURE; 
 
-	char *MENU[9];
-	//- 1*Clicker, 2*Base, 3*Eficiencia de Base, 4*Potencia, 5*Ran#, 6*Autom retraso, 7*Autom Efficiencia, 8*Opciones, 9*partida 
+	/// @brief 1*Clicker, 2*Base, 3*Eficiencia de Base, 4*Potencia, 5*Ran#, 6*Autom retraso, 7*Autom Efficiencia, 8*Opciones, 9*partida
+	char *MENU[9]; 
+	
+	/// @brief 1*Manual, 2*Autom, 3*Cargar, 4*Guardar, 5*Seguro
 	char *SUBMENU[5];
-	//- 1*Manual, 2*Autom, 3*Cargar, 4*Guardar, 5*Seguro
-
-	
 	
 } FRAME = {
 	
@@ -89,7 +92,7 @@ void I_Menu(){
 
 }
 
-void F_Menu(){ //El menu mas importante OMG
+void F_Menu(){ //El menu mas importante !!!!!!!!!!!!OMG!!!!!!!!!!!!!!!!!!
 	
 	system("cls");
 
@@ -262,12 +265,15 @@ void C_Menu(char KEY){ //Calculo del menu
 
 				break;
 
+				default:
+				break;
+
 
 			}
 
         break;
 
-        case 'T': //Para ver temporalmente el menu de informacion extra
+        case 'T': //Para ver el menu de informacion extra
             
 			G_FRAME.CURSOR = TAB;
 

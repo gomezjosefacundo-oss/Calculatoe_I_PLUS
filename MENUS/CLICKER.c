@@ -1,16 +1,19 @@
-#include "Public.h"
+#include "../HEADER/Public.h"
 
-//Prototipos
+
+/// @brief Prototipo funcion FRAME
 void F_Clicker();
+/// @brief Prototipo funcion CALCULADORA
 void C_Clicker();
 
-//Defino enum para data
+/// @brief Enum unicamente para DATA
 typedef enum{
     MANUAL = 1,
     AUTOMATICO = 2
 
 } DATA;
 
+/// @brief Enum unicamente para estados de bloqueo
 typedef enum{
 
     NADA,        //0 - No aplica
@@ -20,7 +23,7 @@ typedef enum{
 
 }TAB_UP_ENUM;
 
-//Definiciones del menu (existe static struct FRAME, enums necesarios y otros)
+/// @brief Definiciones del menu (existe static struct FRAME, enums necesarios y otros)
 static struct{
     int First; //Verificador de mensaje de entrada 1-Escribre 0-Ignora
     int Verify_C; //Indicador de click dado por el C_
@@ -45,11 +48,12 @@ static struct{
 };
 
 
-//Funcion inicializadora y loop del menu
 void I_Clicker(){
 
+    VALORES_T *REF_Valores = &G_FRAME.GAME_VALUE.VALORES;
+
     FRAME.First = 1; //Habilita el mensaje de entrada
-    FRAME.Time_Autom = G_FRAME.GAME_VALUE->VALORES.Time_Autom; //Recupera referencia de delay de click
+    FRAME.Time_Autom = REF_Valores->Time_Autom; //Recupera referencia de delay de click
 
     while(G_FRAME.CURSOR == CLICKER){
 
@@ -61,8 +65,11 @@ void I_Clicker(){
 
 }
 
-//El generador del frame en si
+
 void F_Clicker(){
+
+    VALORES_T *REF_Valores = &G_FRAME.GAME_VALUE.VALORES;
+    OPCIONES_T *REF_Opciones = &G_FRAME.GAME_VALUE.OPCIONES;
 
     if(FRAME.First == 1){
         system("cls");
@@ -71,7 +78,6 @@ void F_Clicker(){
         if(G_FRAME.DATA == AUTOMATICO) printf(" por 1 hora! \nTu delay es %.2f por click!\n", (float)FRAME.Time_Autom/1000);
         
         printf("\nApreta TAB + UP para bloquear el menu y no salir sin querer!\n\n");
-
 
         Sleep(300);
 
@@ -83,9 +89,9 @@ void F_Clicker(){
         
         FRAME.Verify_C = 0;
         
-        printf("\nAns = %.7g \n", G_FRAME.GAME_VALUE->VALORES.Ans);
+        printf("\nAns = %.6g \n", REF_Valores->Ans);
         
-        if(G_FRAME.GAME_VALUE->OPCIONES.ShowClick) printf("Click = %.7g\n", FRAME.Click); //Mostrar valor click
+        if(REF_Opciones->ShowClick) printf("Click = %.6g\n", FRAME.Click); //Mostrar valor click
         
         printf("\n");
     }
@@ -99,20 +105,20 @@ void F_Clicker(){
     
     if(G_FRAME.DATA == AUTOMATICO){
         
-        if(G_FRAME.GAME_VALUE->OPCIONES.ShowDelay){
+        if(REF_Opciones->ShowDelay){
             
-            printf("-> %.7gs ", (float)FRAME.Time_Trans/1000); //Muestra delay
+            printf("-> %.6gs ", (float)FRAME.Time_Trans/1000); //Muestra delay
         } 
     }
 
     if(FRAME.Verify_T == 1){ //Mostrar TABABULADOR
 
         if(G_FRAME.DATA == MANUAL){
-            printf("\n\n!Ganaras > %.7gp < con 500 clicks!\n\n", Click_Event(0, 0)*500);
+            printf("\n\n!Ganaras > %.6gp < con 500 clicks!\n\n", Click_Event(0, 0)*500);
 
         }
         if(G_FRAME.DATA == AUTOMATICO){
-            printf("\n\n!Ganaras > %.7gp < en 1 hora!\n\n", Click_Event(0, 1)*(3600/((float)FRAME.Time_Autom/1000)));
+            printf("\n\n!Ganaras > %.6gp < en 1 hora!\n\n", Click_Event(0, 1)*(3600/((float)FRAME.Time_Autom/1000)));
         }
 
         Sleep(1000);
@@ -123,8 +129,10 @@ void F_Clicker(){
 
 }
 
-//El que evalua a que llamar o que hacer con cada accion
+
 void C_Clicker(){
+
+    VALORES_T *REF_Valores = &G_FRAME.GAME_VALUE.VALORES;
     
     char KEY;
 
@@ -145,13 +153,14 @@ void C_Clicker(){
         case 'R': //Click indicado
             if(G_FRAME.DATA != AUTOMATICO){ // Prevencion de clicks manuales en modo automatico
                
+                actTIME(); //Actualiza referencia de tiempo TIME
                 actEXTRA(); //Actualiza referencia del extra tras un click manual
 
                 FRAME.Verify_C = 1;
     
                 FRAME.Click = Click_Event(1, 0);
     
-                G_FRAME.GAME_VALUE->VALORES.Ans += FRAME.Click;
+                REF_Valores->Ans += FRAME.Click;
             }
 
         break;
@@ -192,12 +201,13 @@ void C_Clicker(){
 
             if(FRAME.Time_Trans >= FRAME.Time_Autom){
 
+                actTIME(); //Actualiza referencia de tiempo TIME
                 actEXTRA(); //Actualiza referencia del extra tras un click autom
 
                 FRAME.Verify_C = 1;
     
                 FRAME.Click = Click_Event(1, 1);
-                G_FRAME.GAME_VALUE->VALORES.Ans += FRAME.Click;
+                REF_Valores->Ans += FRAME.Click;
 
                 FRAME.Time_Trans = 0;
             }
